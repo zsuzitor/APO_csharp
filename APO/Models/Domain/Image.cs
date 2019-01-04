@@ -71,18 +71,26 @@ namespace APO.Models.Domain
                 Place = new string[0];
             if (Type == null)
                 Type = new string[0];
-            
+            int placeLength = Place.Length;
+            int typeLength = Type.Length;
             using (var db = new ApplicationDbContext())
             {
-                var query= db.Images.
-                    Where(x1 => x1.Id > startId && !x1.Deleted );
-                if (Place.Length > 0)
-                    query.Where(x1 => x1.Place != null && Place.Contains(x1.Place));
-                if (Type.Length > 0)
-                    query.Where(x1 => x1.Type != null && Type.Contains(x1.Type));
-                res = query.Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
+                //var query= db.Images.
+                //    Where(x1 => x1.Id > startId && !x1.Deleted );
+                //if (Place.Length > 0)
+                //    query.Where(x1 => x1.Place != null && Place.Contains(x1.Place));
+                //if (Type.Length > 0)
+                //    query.Where(x1 => x1.Type != null && Type.Contains(x1.Type));
+                //res = query.Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
 
-               // var gt = db.Images.Where(x1 => x1.Place != null && Place.Contains(x1.Place)).ToList();
+
+                res = db.Images.
+                    Where(x1 => x1.Id > startId && !x1.Deleted &&
+                    (placeLength > 0 ? Place.Contains(x1.Place) : true) &&
+                    (typeLength > 0 ? Type.Contains(x1.Type) : true)).
+                Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
+
+
             }
 
             return res;
@@ -182,17 +190,27 @@ namespace APO.Models.Domain
             string startIdStr = startId.ToString();
             var oldCMass = oldC.Split(new string[] { "@" }, StringSplitOptions.RemoveEmptyEntries).ToList();
             var oldCMassInt = oldCMass.Select(x1 => int.Parse(x1)).Where(x1 => x1 > startId);
-           
+            int placeLength = Place.Length;
+            int typeLength = Type.Length;
             using (var db = new ApplicationDbContext())
             {
 
-                var query = db.Images.
-                    Where(x1 => oldCMassInt.Contains(x1.Id) && !x1.Deleted);
-                if (Place.Length > 0)
-                    query.Where(x1 => x1.Place != null && Place.Contains(x1.Place));
-                if (Type.Length > 0)
-                    query.Where(x1 => x1.Type != null && Type.Contains(x1.Type));
-                res = query.Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
+                //var query = db.Images.
+                //    Where(x1 => oldCMassInt.Contains(x1.Id) && !x1.Deleted);
+                //if (Place.Length > 0)
+                //    query.Where(x1 => x1.Place != null && Place.Contains(x1.Place));
+                //if (Type.Length > 0)
+                //    query.Where(x1 => x1.Type != null && Type.Contains(x1.Type));
+                //res = query.Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
+
+
+
+
+                res = db.Images.
+                    Where(x1 => oldCMassInt.Contains(x1.Id) && !x1.Deleted &&
+                    (placeLength > 0 ? Place.Contains(x1.Place) : true) &&
+                    (typeLength > 0 ? Type.Contains(x1.Type) : true)).
+                Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
 
             }
             newC = string.Join("@", res);

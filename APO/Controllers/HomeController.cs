@@ -13,27 +13,30 @@ namespace APO.Controllers
     {
         public ActionResult Index()
         {
-            using (var db=new ApplicationDbContext())
-            {
-                ViewBag.idImage = db.Images.FirstOrDefault().Id;
-            }
-            var userId = ApplicationUser.GetUserId();
-            if (userId == null)
-            {
+            //using (var db=new ApplicationDbContext())
+            //{
+            //    ViewBag.idImage = db.Images.FirstOrDefault().Id;
+            //}
+            //var userId = ApplicationUser.GetUserId();
+            //if (userId == null)
+            //{
 
-            }
-            else
-            {
-                var user = ApplicationUser.GetUser(ApplicationUser.GetUserId());
-                user.LoadLikedImages();
-                
-                using (var db = new ApplicationDbContext())
-                {
-                   
-                }
-            }
+            //}
+            //else
+            //{
+            //    var user = ApplicationUser.GetUser(ApplicationUser.GetUserId());
+            //    user.LoadLikedImages();
 
+            //    using (var db = new ApplicationDbContext())
+            //    {
 
+            //    }
+            //}
+            //Response.StatusCode = 500;
+
+            //Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            //return Json(new { jobId = -1 });
+            
 
             return View();
         }
@@ -43,109 +46,140 @@ namespace APO.Controllers
 
         public ActionResult ListImages(string [] Place, string[] Type,int startId= 0)//int count,
         {
-            var mass = Image.GetListId(Place, Type, startId);//count,
-            ViewBag.lastImageId = mass.LastOrDefault();
-            ViewBag.massImages = mass;
-            //return RedirectToRoute(new { action = "Index", controller= "Home" });
-            //return RedirectToAction("Index","Home",new { });
+            try
+            {
+                var mass = Image.GetListId(Place, Type, startId);//count,
+                ViewBag.lastImageId = mass.LastOrDefault();
+                ViewBag.massImages = mass;
+                //return RedirectToRoute(new { action = "Index", controller= "Home" });
+                //return RedirectToAction("Index","Home",new { });
+            }
+            catch (Exception e)
+            {
+                Response.StatusCode = 500;
+                return Json(new {errorText=e.Message,inner=e.InnerException?.Message });
+            }
+           
+
             return PartialView();
         }
 
         public ActionResult ListLikedImages(string[] Place, string[] Type , int startId=0)//int count,
         {
-            var user = ApplicationUser.GetUser(ApplicationUser.GetUserId());
-
-            if (Place == null)
-                Place = new string[0];
-            if (Type == null)
-                Type = new string[0];
-
-            List<int> mass = new List<int>();
-            if (user == null)
+            try
             {
-                var imgslikeC = HttpContext.Request.Cookies["LikedImgMass"]?.Value??"";
-                string newFavStr;
-                mass = Image.GetFromCookies(Place, Type,imgslikeC, out newFavStr, startId);
-                HttpContext.Request.Cookies["LikedImgMass"].Value = newFavStr;
+                var user = ApplicationUser.GetUser(ApplicationUser.GetUserId());
+
+                if (Place == null)
+                    Place = new string[0];
+                if (Type == null)
+                    Type = new string[0];
+
+                List<int> mass = new List<int>();
+                if (user == null)
+                {
+                    var imgslikeC = HttpContext.Request.Cookies["LikedImgMass"]?.Value ?? "";
+                    string newFavStr;
+                    mass = Image.GetFromCookies(Place, Type, imgslikeC, out newFavStr, startId);
+                    HttpContext.Request.Cookies["LikedImgMass"].Value = newFavStr;
+                }
+                else
+                {
+                    user.GetLikedImages(Place, Type, startId);
+
+                }
+
+                ViewBag.lastImageLikedId = mass.LastOrDefault();
+                ViewBag.massImagesLiked = mass;
             }
-            else
+            catch (Exception e)
             {
-                user.LoadLikedImages();
-                //SkipWhile
-
-                var query = user.ImagesLikes.Where(x1 => x1.Id > startId && !x1.Deleted);
-                if (Place.Length > 0)
-                    query.Where(x1 => x1.Place != null && Place.Contains(x1.Place));
-                if (Type.Length > 0)
-                    query.Where(x1 => x1.Type != null && Type.Contains(x1.Type));
-                mass = query.Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
-
-
-
-                
+                Response.StatusCode = 500;
+                return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
             }
-                
-            ViewBag.lastImageLikedId = mass.LastOrDefault();
-            ViewBag.massImagesLiked = mass;
+            
+            
             return PartialView();
         }
 
 
         public ActionResult ListFavoriteImages( string[] Place, string[] Type, int startId=0)//int count,
         {
-            if (Place == null)
-                Place = new string[0];
-            if (Type == null)
-                Type = new string[0];
-
-            var user = ApplicationUser.GetUser(ApplicationUser.GetUserId());
-            List<int> mass = new List<int>();
-            if (user == null)
+            try
             {
-                var imgsFavC = HttpContext.Request.Cookies["FavoritedImgMass"]?.Value ?? "";
-                string newFavStr;
-                mass=Image.GetFromCookies(Place,Type, imgsFavC, out newFavStr, startId);
-                HttpContext.Request.Cookies["FavoritedImgMass"].Value = newFavStr;
+                if (Place == null)
+                    Place = new string[0];
+                if (Type == null)
+                    Type = new string[0];
+
+                var user = ApplicationUser.GetUser(ApplicationUser.GetUserId());
+                List<int> mass = new List<int>();
+                if (user == null)
+                {
+                    var imgsFavC = HttpContext.Request.Cookies["FavoritedImgMass"]?.Value ?? "";
+                    string newFavStr;
+                    mass = Image.GetFromCookies(Place, Type, imgsFavC, out newFavStr, startId);
+                    HttpContext.Request.Cookies["FavoritedImgMass"].Value = newFavStr;
+                }
+                else
+                {
+                    user.GetFavoritedImages(Place, Type, startId);
+
+
+                }
+
+
+                ViewBag.lastImageFavoritedId = mass.LastOrDefault();
+                ViewBag.massImagesFavorited = mass;
             }
-            else
+            catch (Exception e)
             {
-                user.LoadFavoritedImages();
-                //SkipWhile
-
-                var query = user.ImagesFavorites.Where(x1 => x1.Id > startId && !x1.Deleted);
-                if (Place.Length > 0)
-                    query.Where(x1 => x1.Place != null && Place.Contains(x1.Place));
-                if (Type.Length > 0)
-                    query.Where(x1 => x1.Type != null && Type.Contains(x1.Type));
-                mass = query.Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
-
-               
+                Response.StatusCode = 500;
+                return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
             }
-               
             
-            ViewBag.lastImageFavoritedId = mass.LastOrDefault();
-            ViewBag.massImagesFavorited = mass;
+            
             return PartialView();
         }
 
         //[HttpPost]
         public ActionResult DeleteImage(int id)
         {
-            Image.Delete(id);
+            try
+            {
+                Image.Delete(id);
+            }
+            catch (Exception e)
+            {
+                Response.StatusCode = 500;
+                return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
+            }
+            
+            
             return RedirectToAction("Index");
         }
 
         //[HttpPost]
         public ActionResult AddImages(HttpPostedFileBase file, HttpPostedFileBase[] uploadImage)
         {
-            var massCords = new StreamReader(file.InputStream).ReadToEnd().Split('\n');
-
-
-            for(int i= 0;i<(massCords.Length < uploadImage.Length ? massCords.Length : uploadImage.Length);++i)
+            try
             {
-                var img = new Image( massCords[i].Trim());
-                img.AddNew(uploadImage[i]);
+                var massCords = new StreamReader(file.InputStream).ReadToEnd().Split('\n');
+
+
+                for (int i = 0; i < (massCords.Length < uploadImage.Length ? massCords.Length : uploadImage.Length); ++i)
+                {
+                    var img = new Image(massCords[i].Trim());
+                    img.AddNew(uploadImage[i]);
+                }
             }
+            catch (Exception e)
+            {
+                Response.StatusCode = 500;
+                return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
+            }
+            
+            
 
             return RedirectToAction("Index");
         }
@@ -153,8 +187,18 @@ namespace APO.Controllers
         //[HttpPost]
         public ActionResult AddImage(Image a, HttpPostedFileBase uploadImage)//string name, string description, string cords, HttpPostedFileBase uploadImage
         {
-            var img = new Image(a.Name, a.Description, a.Place, a.Type,a.Cords);
-            img.AddNew(uploadImage);
+            try
+            {
+                var img = new Image(a.Name, a.Description, a.Place, a.Type, a.Cords);
+                img.AddNew(uploadImage);
+            }
+            catch (Exception e)
+            {
+                Response.StatusCode = 500;
+                return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
+            }
+           
+            
 
             return RedirectToAction("Index");
         }
@@ -162,8 +206,18 @@ namespace APO.Controllers
         //для связывания параметров передавать их по именам свойств Image (Id,Name и тд)(как обычные параметры)
         public ActionResult EditImage(Image a)
         {
-            var img = Image.Get(a.Id);
-            img.Edit(a);
+            try
+            {
+                var img = Image.Get(a.Id);
+                img.Edit(a);
+            }
+            catch (Exception e)
+            {
+                Response.StatusCode = 500;
+                return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
+            }
+          
+            
 
             return RedirectToAction("Index");
         }
@@ -173,49 +227,69 @@ namespace APO.Controllers
         //[HttpPost]
         public ActionResult FavoriteImage(int id)
         {
-            var userId = ApplicationUser.GetUserId();
-            bool setFav;
-            if (userId == null)
+            try
             {
-                var imgsFavC = HttpContext.Request.Cookies["FavoritedImgMass"]?.Value ?? "";
-                string newC = "";
+                var userId = ApplicationUser.GetUserId();
+                bool setFav;
+                if (userId == null)
+                {
+                    var imgsFavC = HttpContext.Request.Cookies["FavoritedImgMass"]?.Value ?? "";
+                    string newC = "";
 
-                Image.AddDelCookies(id.ToString(), imgsFavC, out newC, out setFav);
-                HttpContext.Response.Cookies["FavoritedImgMass"].Value = newC;
-                ViewBag.setLike = setFav;
-                return RedirectToAction("Index");
+                    Image.AddDelCookies(id.ToString(), imgsFavC, out newC, out setFav);
+                    HttpContext.Response.Cookies["FavoritedImgMass"].Value = newC;
+                    ViewBag.setLike = setFav;
+                    return RedirectToAction("Index");
+                }
+                var img = Image.Get(id);
+
+                img.Favorite(out setFav, userId);
+                ViewBag.setFav = setFav;
             }
-            var img = Image.Get(id);
+            catch (Exception e)
+            {
+                Response.StatusCode = 500;
+                return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
+            }
 
-            img.Favorite(out setFav, userId);
-            ViewBag.setFav = setFav;
 
 
-            
-                return RedirectToAction("Index");
-            
+
+
+            return RedirectToAction("Index");
+
 
 
         }
         //[HttpPost]
         public ActionResult LikeImage(int id)
         {
-            var userId = ApplicationUser.GetUserId();
-            bool setLike;
-            if (userId == null)
+            try
             {
-                var imgsLikedC = HttpContext.Request.Cookies["LikedImgMass"]?.Value ?? "";
-                string newC = "";
-              
-                Image.AddDelCookies(id.ToString(), imgsLikedC,out newC,out setLike);
-                HttpContext.Response.Cookies["LikedImgMass"].Value = newC;
+                var userId = ApplicationUser.GetUserId();
+                bool setLike;
+                if (userId == null)
+                {
+                    var imgsLikedC = HttpContext.Request.Cookies["LikedImgMass"]?.Value ?? "";
+                    string newC = "";
+
+                    Image.AddDelCookies(id.ToString(), imgsLikedC, out newC, out setLike);
+                    HttpContext.Response.Cookies["LikedImgMass"].Value = newC;
+                    ViewBag.setLike = setLike;
+                    return RedirectToAction("Index");
+                }
+                var img = Image.Get(id);
+
+                img.Like(out setLike, userId);
                 ViewBag.setLike = setLike;
-                return RedirectToAction("Index");
             }
-            var img = Image.Get(id);
-           
-            img.Like(out setLike, userId);
-            ViewBag.setLike = setLike;
+            catch (Exception e)
+            {
+                Response.StatusCode = 500;
+                return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
+            }
+            
+            
 
             
             

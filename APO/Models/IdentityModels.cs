@@ -101,6 +101,54 @@ namespace APO.Models
         }
 
 
+        public List<int> GetLikedImages(string[] Place, string[] Type, int startId = 0)
+        {
+            this.LoadLikedImages();
+            //SkipWhile
+
+            //var query = user.ImagesLikes.Where(x1 => x1.Id > startId && !x1.Deleted);
+            //if (Place.Length > 0)
+            //    query.Where(x1 => x1.Place != null && Place.Contains(x1.Place));
+            //if (Type.Length > 0)
+            //    query.Where(x1 => x1.Type != null && Type.Contains(x1.Type));
+            //mass = query.Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
+
+            int placeLength = Place.Length;
+            int typeLength = Type.Length;
+
+            return this.ImagesLikes.
+                Where(x1 => x1.Id > startId && !x1.Deleted &&
+                (placeLength > 0 ? Place.Contains(x1.Place) : true) &&
+               (typeLength > 0 ? Type.Contains(x1.Type) : true)).
+            Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
+
+
+            
+        }
+
+        public List<int> GetFavoritedImages(string[] Place, string[] Type, int startId = 0)
+        {
+            this.LoadFavoritedImages();
+            //SkipWhile
+
+            //var query = user.ImagesFavorites.Where(x1 => x1.Id > startId && !x1.Deleted);
+            //if (Place.Length > 0)
+            //    query.Where(x1 => x1.Place != null && Place.Contains(x1.Place));
+            //if (Type.Length > 0)
+            //    query.Where(x1 => x1.Type != null && Type.Contains(x1.Type));
+            //mass = query.Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
+
+
+            int placeLength = Place.Length;
+            int typeLength = Type.Length;
+
+            return this.ImagesFavorites.
+                Where(x1 => x1.Id > startId && !x1.Deleted &&
+                (placeLength > 0 ? Place.Contains(x1.Place) : true) &&
+                (typeLength > 0 ? Type.Contains(x1.Type) : true)).
+            Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
+
+        }
 
 
 

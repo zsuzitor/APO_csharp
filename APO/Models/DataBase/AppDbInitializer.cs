@@ -8,7 +8,7 @@ using System.Web;
 
 namespace APO.Models.DataBase
 {
-    public class AppDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
+    public class AppDbInitializer : CreateDatabaseIfNotExists<ApplicationDbContext>
     {
 
         protected override void Seed(ApplicationDbContext db)//название котекста
