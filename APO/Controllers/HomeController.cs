@@ -170,7 +170,13 @@ namespace APO.Controllers
                 for (int i = 0; i < (massCords.Length < uploadImage.Length ? massCords.Length : uploadImage.Length); ++i)
                 {
                     var img = new Image(massCords[i].Trim());
-                    img.AddNew(uploadImage[i]);
+                    bool sc=img.AddNew(uploadImage[i]);
+                    if (!sc)
+                    {
+                        Image.Delete(img.Id);
+                        throw new Exception("проблемы с файлом");
+                    }
+                       
                 }
             }
             catch (Exception e)
@@ -190,7 +196,12 @@ namespace APO.Controllers
             try
             {
                 var img = new Image(a.Name, a.Description, a.Place, a.Type, a.Cords);
-                img.AddNew(uploadImage);
+                bool sc = img.AddNew(uploadImage);
+                if (!sc)
+                {
+                    Image.Delete(img.Id);
+                    throw new Exception("проблемы с файлом");
+                }
             }
             catch (Exception e)
             {

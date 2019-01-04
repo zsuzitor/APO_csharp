@@ -45,10 +45,15 @@ namespace APO.Models.Domain
 
         public Image(string cords):base()
         {
-            Cords = cords;
+            if (string.IsNullOrWhiteSpace(cords))
+                throw new Exception("передана пустая строка для координат");
+                Cords = cords;
         }
         public Image(string name, string description, string place, string type, string cords)
         {
+            if (string.IsNullOrWhiteSpace(cords))
+                throw new Exception("передана пустая строка для координат");
+
             Id = 0;
             Name = name;
             Description = description;
@@ -295,8 +300,8 @@ namespace APO.Models.Domain
             //mass.Add(Image.ResizeImage(50, mass[0]));
             Dictionary<string, System.Drawing.Image> mass = new Dictionary<string, System.Drawing.Image>();
             mass.Add("original", Image.byteArrayToImage(bytes));
-            mass.Add("optimal", Image.ResizeImage(100, mass["original"]));
-            mass.Add("min", Image.ResizeImage(50, mass["original"]));
+            mass.Add("optimal", Image.ResizeImage(50, mass["original"]));
+            mass.Add("min", Image.ResizeImage(25, mass["original"]));
             string path = HostingEnvironment.MapPath($"~/Content/DbImages/" + this.Id);
             if (Directory.Exists(path))
             {
@@ -364,22 +369,27 @@ namespace APO.Models.Domain
 
             return res;
         }
-        
-        private static System.Drawing.Image ResizeImage(int newSize, System.Drawing.Image originalImage)
+        //newSizePerc- 0\100
+        private static System.Drawing.Image ResizeImage(int newSizePerc, System.Drawing.Image originalImage)
         {
-            if (originalImage.Width <= newSize)
-                newSize = originalImage.Width;
+            int newSizeW= (int)(Convert.ToDouble( originalImage.Width)* newSizePerc/100);
+            int newSizeH= (int)(Convert.ToDouble(originalImage.Height) * newSizePerc / 100);
+            if (newSizeW <= 100)
+                newSizeW = 100;
+            //if (newSizeH <= 100)
+            //    newSizeH = 100;
+            var ff = Convert.ToDouble(originalImage.Height) / originalImage.Width;
+            newSizeH = (int)(newSizeW * ff);
+            //var newHeight = originalImage.Height * newSize / originalImage.Width;
 
-            var newHeight = originalImage.Height * newSize / originalImage.Width;
+            //if (newHeight > newSize)
+            //{
+            //    // Resize with height instead
+            //    newSize = originalImage.Width * newSize / originalImage.Height;
+            //    newHeight = newSize;
+            //}
 
-            if (newHeight > newSize)
-            {
-                // Resize with height instead
-                newSize = originalImage.Width * newSize / originalImage.Height;
-                newHeight = newSize;
-            }
-
-            return originalImage.GetThumbnailImage(newSize, newHeight, null, IntPtr.Zero);
+            return originalImage.GetThumbnailImage(newSizeW, newSizeH, null, IntPtr.Zero);
         }
 
 
