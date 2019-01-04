@@ -1,0 +1,9 @@
+﻿
+@Html.Label(" ","--"+ (int)ViewBag.lastImageId)
+
+@foreach(var i in (List<int>)ViewBag.massImages)
+{
+    <p>загружено @i</p>
+}
+
+

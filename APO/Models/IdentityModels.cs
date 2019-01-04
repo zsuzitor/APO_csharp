@@ -81,7 +81,7 @@ namespace APO.Models
             {
                 db.Set<ApplicationUser>().Attach(this);
                 if (!db.Entry(this).Collection(x1 => x1.ImagesLikes).IsLoaded)
-                    db.Entry(this).Reference(x1 => x1.ImagesLikes).Load();
+                    db.Entry(this).Collection(x1 => x1.ImagesLikes).Load();
             }
                 
             
@@ -93,7 +93,7 @@ namespace APO.Models
             {
                 db.Set<ApplicationUser>().Attach(this);
                 if (!db.Entry(this).Collection(x1 => x1.ImagesFavorites).IsLoaded)
-                    db.Entry(this).Reference(x1 => x1.ImagesFavorites).Load();
+                    db.Entry(this).Collection(x1 => x1.ImagesFavorites).Load();
             }
 
 

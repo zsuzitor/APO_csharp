@@ -1,7 +1,7 @@
 ﻿@{
     ViewBag.Title = "Home Page";
 }
-
+<p>создание 1 картинки</p>
 @using (Html.BeginForm("AddImage", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
    @Html.Editor("Name")
@@ -17,8 +17,26 @@
 
 <hr/>
 <div>
+    <p>редактирование 1 картинки</p>
+    @using (Html.BeginForm("EditImage", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.Label(" ","id")
+        @Html.Editor("Id")
+        @Html.Editor("Name")
+        @Html.Editor("Description")
+        @Html.Editor("Cords")
+        @Html.Editor("Place")
+        @Html.Editor("Type")
+      
+        <input type="submit" class="submit" value="отправить" />
+    }
+
+</div>
+
+<hr />
+<div>
     <p>лайк картинку</p>
-    @if (ViewBag.idImage != null)
+    @*@if (ViewBag.idImage != null)
     {
         if (ViewBag.setLike != null)
         {
@@ -31,18 +49,19 @@
                 @Html.Label(" ", "Лайк снят")
             }
 
+        }*@
+        @using (Html.BeginForm("LikeImage", "Home")) {
+            @Html.Label(" ", "id картинки");
+            @Html.Editor("id")
+            <input type = "submit" value = "лайкнуть" />
         }
-        @Html.BeginForm("LikeImage","Home"){
-            @Html.Label("id",(string)ViewBag.idImage);
-            <input type="submit" value="лайкнуть"/>
-        }
-    }
+    @*}*@
     
 </div>
 <hr />
 <div>
     <p>Добавить в избранное</p>
-    @if (ViewBag.idImage != null)
+    @*@if (ViewBag.idImage != null)
     {
         if (ViewBag.setFav != null)
         {
@@ -55,26 +74,63 @@
                 @Html.Label(" ", "не в избранном")
             }
 
+        }*@
+        @using (Html.BeginForm("FavoriteImage", "Home"))
+        {
+            @Html.Label(" ", "id картинки");
+            @Html.Editor("id")
+            <input type="submit" value="добавить" />
         }
-        @Html.BeginForm("FavoriteImage", "Home"){
-            @Html.Label("id", (string)ViewBag.idImage);
-            <input type="submit" value="добавить в избранное" />
-        }
-    }
+    @*}*@
 
 </div>
 
 <hr />
 <div>
     <p>все картинки</p>
-    @Html.Action("ListImages","Home")
+    @*@Html.Action("ListImages","Home",new { Place=new string[0],Type= new string[0] })*@
+    @using (Ajax.BeginForm("ListImages", new AjaxOptions
+    {
+        UpdateTargetId = "all_img_load_id",
+        InsertionMode = InsertionMode.InsertAfter
+    }))
+    {
+        @Html.Label(" ", "id последней загруженной картинки");
+        @Html.Editor("startId")
+        <div>
+            @Html.Label(" ", "Place")
+            @Html.Editor("Place[0]")
+            @*@Html.Editor("Place[1]")
+            @Html.Editor("Place[2]")*@
+        </div>
+        <div>
+            @Html.Label(" ", "Type")
+            @Html.Editor("Type[0]")
+            @*@Html.Editor("Type[1]")
+            @Html.Editor("Type[2]")*@
+        </div>
+        <input type="submit" value="загрузить"/>
+    }
+
+    <div id="all_img_load_id"></div>
 
 </div>
 <hr />
 <div>
     <p>лайкнутые</p>
-    @Html.Action("ListLikedImages", "Home")
-    
+    @*@Html.Action("ListLikedImages", "Home", new { Place = new string[0], Type = new string[0] })*@
+    @using (Ajax.BeginForm("ListLikedImages", new AjaxOptions
+    {
+        UpdateTargetId = "like_img_load_id",
+        InsertionMode = InsertionMode.InsertAfter
+    }))
+    {
+        @Html.Label(" ", "id последней загруженной картинки");
+        @Html.Editor("startId")
+        <input type="submit" value="загрузить" />
+    }
+
+    <div id="like_img_load_id"></div>
 
 </div>
 
@@ -85,8 +141,21 @@
 
 <div>
     <p>избранные</p>
-    @Html.Action("ListFavoriteImages", "Home")
-    
+    @*@Html.Action("ListFavoriteImages", "Home", new { Place = new string[0], Type = new string[0] })*@
+    @using (Ajax.BeginForm("ListFavoriteImages", new AjaxOptions
+    {
+        UpdateTargetId = "fav_img_load_id",
+        InsertionMode = InsertionMode.InsertAfter
+    }))
+    {
+        @Html.Label(" ", "id последней загруженной картинки");
+        @Html.Editor("startId")
+        <input type="submit" value="загрузить" />
+    }
+
+    <div id="fav_img_load_id">
+       
+    </div>
 </div>
 
 
@@ -94,7 +163,15 @@
 
 <div>
     <p>удалить</p>
-    @Html.Editor("id")
+
+    @using (Html.BeginForm("DeleteImage", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.Editor("id")
+       
+        <input type="submit" class="submit" value="удалить" />
+    }
+
+  
 
 </div>
 
@@ -111,10 +188,19 @@
 <hr />
 
 <div>
-    <p>редактировать картинку</p>
-
+    <p>загрузка пака</p>
+    @using (Html.BeginForm("AddImages", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+       
+        @Html.Label(" ", "координаты")
+        <input type="file" name="file" />
+        @Html.Label(" ", "картинки")
+        <input type="file" name="uploadImage" multiple/>
+        <input type="submit" class="submit" value="отправить" />
+    }
 
 </div>
+
 
 
 <hr />

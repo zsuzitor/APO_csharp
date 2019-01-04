@@ -63,7 +63,7 @@ namespace APO.Models.Domain
             UsersFavorited = new List<ApplicationUser>();
         }
 
-        public static List<int> GetListId(string[] Place, string[] Type, int startId = 1)//int count,
+        public static List<int> GetListId(string[] Place, string[] Type, int startId = 0)//int count,
         {
             List<int> res = new List<int>();
             
@@ -71,13 +71,18 @@ namespace APO.Models.Domain
                 Place = new string[0];
             if (Type == null)
                 Type = new string[0];
+            
             using (var db = new ApplicationDbContext())
             {
-                res = db.Images.SkipWhile(x1 => x1.Id != startId).
-                    Where(x1 => !x1.Deleted &&
-                    Place.Length>0? Place.Contains( x1.Place):true &&
-                    Type.Length > 0 ? Type.Contains(x1.Type):true).
-                Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
+                var query= db.Images.
+                    Where(x1 => x1.Id > startId && !x1.Deleted );
+                if (Place.Length > 0)
+                    query.Where(x1 => x1.Place != null && Place.Contains(x1.Place));
+                if (Type.Length > 0)
+                    query.Where(x1 => x1.Type != null && Type.Contains(x1.Type));
+                res = query.Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
+
+               // var gt = db.Images.Where(x1 => x1.Place != null && Place.Contains(x1.Place)).ToList();
             }
 
             return res;
@@ -94,7 +99,7 @@ namespace APO.Models.Domain
 
                 db.Set<Image>().Attach(this);
                 if (!db.Entry(this).Collection(x1 => x1.UsersFavorited).IsLoaded)
-                    db.Entry(this).Reference(x1 => x1.UsersFavorited).Load();
+                    db.Entry(this).Collection(x1 => x1.UsersFavorited).Load();
 
                 var likedObj = this.UsersFavorited.FirstOrDefault(x1 => x1.Id == userId);
                 if (likedObj == null)
@@ -124,7 +129,7 @@ namespace APO.Models.Domain
                 
                 db.Set<Image>().Attach(this);
                 if (!db.Entry(this).Collection(x1=>x1.UsersLiked).IsLoaded)
-                    db.Entry(this).Reference(x1 => x1.UsersLiked).Load();
+                    db.Entry(this).Collection(x1 => x1.UsersLiked).Load();
 
                 var likedObj = this.UsersLiked.FirstOrDefault(x1 => x1.Id == userId);
                 if (likedObj == null)
@@ -154,6 +159,8 @@ namespace APO.Models.Domain
                 this.Name = a.Name;
                 this.Description = a.Description;
                 this.Cords = a.Cords;
+                this.Place = a.Place;
+                this.Type= a.Type;
                 db.SaveChanges();
             }
 
@@ -161,10 +168,11 @@ namespace APO.Models.Domain
             }
 
 
-
-        public static List<int> GetFromCookies(string[] Place, string[] Type, string oldC, out string newC,int startId)//,string properties
+        
+        public static List<int> GetFromCookies(string[] Place, string[] Type, string oldC, out string newC,int startId=0)//,string properties
         {
-            
+            //startId = startId > 0 ? startId : startId + 1;
+           // startId ++;
             if (Place == null)
                 Place = new string[0];
             if (Type == null)
@@ -173,16 +181,19 @@ namespace APO.Models.Domain
             List<int> res = null;
             string startIdStr = startId.ToString();
             var oldCMass = oldC.Split(new string[] { "@" }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            var oldCMassInt = oldCMass.SkipWhile(x1 => x1 != startIdStr).Select(x1 => int.Parse(x1));
+            var oldCMassInt = oldCMass.Select(x1 => int.Parse(x1)).Where(x1 => x1 > startId);
            
             using (var db = new ApplicationDbContext())
             {
-                res = db.Images.Where(x1 => oldCMassInt.Contains(x1.Id)&&
-                !x1.Deleted &&
-                    Place.Length > 0 ? Place.Contains(x1.Place) : true &&
-                    Type.Length > 0 ? Type.Contains(x1.Type) : true
 
-                ).Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
+                var query = db.Images.
+                    Where(x1 => oldCMassInt.Contains(x1.Id) && !x1.Deleted);
+                if (Place.Length > 0)
+                    query.Where(x1 => x1.Place != null && Place.Contains(x1.Place));
+                if (Type.Length > 0)
+                    query.Where(x1 => x1.Type != null && Type.Contains(x1.Type));
+                res = query.Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
+
             }
             newC = string.Join("@", res);
             return res;
@@ -234,9 +245,9 @@ namespace APO.Models.Domain
                 var img = db.Images.FirstOrDefault(x1 => x1.Id == id);
                 img.Deleted = true;
                 //if (!db.Entry(img).Collection(x1 => x1.UsersFavorited).IsLoaded)
-                //    db.Entry(img).Reference(x1 => x1.UsersFavorited).Load();
+                //    db.Entry(img).Collection(x1 => x1.UsersFavorited).Load();
                 //if (!db.Entry(img).Collection(x1 => x1.UsersLiked).IsLoaded)
-                //    db.Entry(img).Reference(x1 => x1.UsersLiked).Load();
+                //    db.Entry(img).Collection(x1 => x1.UsersLiked).Load();
                 //img.UsersFavorited.RemoveAll(x1=>true);
                 //img.UsersLiked.RemoveAll(x1 => true);
                 db.SaveChanges();

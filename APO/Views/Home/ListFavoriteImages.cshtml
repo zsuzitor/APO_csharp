@@ -1,0 +1,12 @@
+﻿
+
+@Html.Label(" ", "--" + (int)ViewBag.lastImageFavoritedId)
+
+@foreach (var i in (List<int>)ViewBag.massImagesFavorited)
+{
+    <p>загружено @i</p>
+}
+
+
+
+

@@ -15,7 +15,7 @@ namespace APO.Controllers
         {
             using (var db=new ApplicationDbContext())
             {
-                ViewBag.idImage = db.Images.FirstOrDefault();
+                ViewBag.idImage = db.Images.FirstOrDefault().Id;
             }
             var userId = ApplicationUser.GetUserId();
             if (userId == null)
@@ -41,15 +41,17 @@ namespace APO.Controllers
 
 
 
-        public ActionResult ListImages(string [] Place, string[] Type,int startId= 1)//int count,
+        public ActionResult ListImages(string [] Place, string[] Type,int startId= 0)//int count,
         {
             var mass = Image.GetListId(Place, Type, startId);//count,
             ViewBag.lastImageId = mass.LastOrDefault();
             ViewBag.massImages = mass;
-            return RedirectToAction("Index");
+            //return RedirectToRoute(new { action = "Index", controller= "Home" });
+            //return RedirectToAction("Index","Home",new { });
+            return PartialView();
         }
 
-        public ActionResult ListLikedImages(string[] Place, string[] Type , int startId=1)//int count,
+        public ActionResult ListLikedImages(string[] Place, string[] Type , int startId=0)//int count,
         {
             var user = ApplicationUser.GetUser(ApplicationUser.GetUserId());
 
@@ -61,7 +63,7 @@ namespace APO.Controllers
             List<int> mass = new List<int>();
             if (user == null)
             {
-                var imgslikeC = HttpContext.Request.Cookies["LikedImgMass"].Value;
+                var imgslikeC = HttpContext.Request.Cookies["LikedImgMass"]?.Value??"";
                 string newFavStr;
                 mass = Image.GetFromCookies(Place, Type,imgslikeC, out newFavStr, startId);
                 HttpContext.Request.Cookies["LikedImgMass"].Value = newFavStr;
@@ -69,25 +71,38 @@ namespace APO.Controllers
             else
             {
                 user.LoadLikedImages();
-                mass = user.ImagesLikes.SkipWhile(x1 => x1.Id != startId).Where(x1 => !x1.Deleted &&
-                    Place.Length > 0 ? Place.Contains(x1.Place) : true &&
-                    Type.Length > 0 ? Type.Contains(x1.Type) : true
-                ).Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
+                //SkipWhile
+
+                var query = user.ImagesLikes.Where(x1 => x1.Id > startId && !x1.Deleted);
+                if (Place.Length > 0)
+                    query.Where(x1 => x1.Place != null && Place.Contains(x1.Place));
+                if (Type.Length > 0)
+                    query.Where(x1 => x1.Type != null && Type.Contains(x1.Type));
+                mass = query.Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
+
+
+
+                
             }
                 
             ViewBag.lastImageLikedId = mass.LastOrDefault();
             ViewBag.massImagesLiked = mass;
-            return RedirectToAction("Index");
+            return PartialView();
         }
 
 
-        public ActionResult ListFavoriteImages( string[] Place, string[] Type, int startId=1)//int count,
+        public ActionResult ListFavoriteImages( string[] Place, string[] Type, int startId=0)//int count,
         {
+            if (Place == null)
+                Place = new string[0];
+            if (Type == null)
+                Type = new string[0];
+
             var user = ApplicationUser.GetUser(ApplicationUser.GetUserId());
             List<int> mass = new List<int>();
             if (user == null)
             {
-                var imgsFavC = HttpContext.Request.Cookies["FavoritedImgMass"].Value;
+                var imgsFavC = HttpContext.Request.Cookies["FavoritedImgMass"]?.Value ?? "";
                 string newFavStr;
                 mass=Image.GetFromCookies(Place,Type, imgsFavC, out newFavStr, startId);
                 HttpContext.Request.Cookies["FavoritedImgMass"].Value = newFavStr;
@@ -95,16 +110,22 @@ namespace APO.Controllers
             else
             {
                 user.LoadFavoritedImages();
-                mass = user.ImagesFavorites.SkipWhile(x1 => x1.Id != startId).Where(x1 => !x1.Deleted &&
-                    Place.Length > 0 ? Place.Contains(x1.Place) : true &&
-                    Type.Length > 0 ? Type.Contains(x1.Type) : true
-                ).Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
+                //SkipWhile
+
+                var query = user.ImagesFavorites.Where(x1 => x1.Id > startId && !x1.Deleted);
+                if (Place.Length > 0)
+                    query.Where(x1 => x1.Place != null && Place.Contains(x1.Place));
+                if (Type.Length > 0)
+                    query.Where(x1 => x1.Type != null && Type.Contains(x1.Type));
+                mass = query.Take(Constants.CountLoadItem).Select(x1 => x1.Id).ToList();
+
+               
             }
                
             
             ViewBag.lastImageFavoritedId = mass.LastOrDefault();
             ViewBag.massImagesFavorited = mass;
-            return RedirectToAction("Index");
+            return PartialView();
         }
 
         //[HttpPost]
@@ -156,7 +177,7 @@ namespace APO.Controllers
             bool setFav;
             if (userId == null)
             {
-                var imgsFavC = HttpContext.Request.Cookies["FavoritedImgMass"].Value;
+                var imgsFavC = HttpContext.Request.Cookies["FavoritedImgMass"]?.Value ?? "";
                 string newC = "";
 
                 Image.AddDelCookies(id.ToString(), imgsFavC, out newC, out setFav);
@@ -183,7 +204,7 @@ namespace APO.Controllers
             bool setLike;
             if (userId == null)
             {
-                var imgsLikedC = HttpContext.Request.Cookies["LikedImgMass"].Value;
+                var imgsLikedC = HttpContext.Request.Cookies["LikedImgMass"]?.Value ?? "";
                 string newC = "";
               
                 Image.AddDelCookies(id.ToString(), imgsLikedC,out newC,out setLike);
