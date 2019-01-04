@@ -1,0 +1,192 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+@using (Html.BeginForm("AddImage", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+   @Html.Editor("Name")
+    @Html.Editor("Description")
+    @Html.Editor("Cords")
+    @Html.Editor("Place")
+    @Html.Editor("Type")
+    <input type="file" name="uploadImage" />
+                        <input type="submit" class="submit" value="отправить" />
+}
+
+
+
+<hr/>
+<div>
+    <p>лайк картинку</p>
+    @if (ViewBag.idImage != null)
+    {
+        if (ViewBag.setLike != null)
+        {
+            if (((bool)ViewBag.setLike))
+            {
+                @Html.Label(" ","Лайк поставлен")
+            }
+            else
+            {
+                @Html.Label(" ", "Лайк снят")
+            }
+
+        }
+        @Html.BeginForm("LikeImage","Home"){
+            @Html.Label("id",(string)ViewBag.idImage);
+            <input type="submit" value="лайкнуть"/>
+        }
+    }
+    
+</div>
+<hr />
+<div>
+    <p>Добавить в избранное</p>
+    @if (ViewBag.idImage != null)
+    {
+        if (ViewBag.setFav != null)
+        {
+            if (((bool)ViewBag.setFav))
+            {
+                @Html.Label(" ", "добавлена в избранное")
+            }
+            else
+            {
+                @Html.Label(" ", "не в избранном")
+            }
+
+        }
+        @Html.BeginForm("FavoriteImage", "Home"){
+            @Html.Label("id", (string)ViewBag.idImage);
+            <input type="submit" value="добавить в избранное" />
+        }
+    }
+
+</div>
+
+<hr />
+<div>
+    <p>все картинки</p>
+    @Html.Action("ListImages","Home")
+
+</div>
+<hr />
+<div>
+    <p>лайкнутые</p>
+    @Html.Action("ListLikedImages", "Home")
+    
+
+</div>
+
+
+
+<hr />
+
+
+<div>
+    <p>избранные</p>
+    @Html.Action("ListFavoriteImages", "Home")
+    
+</div>
+
+
+<hr />
+
+<div>
+    <p>удалить</p>
+    @Html.Editor("id")
+
+</div>
+
+
+<hr />
+
+<div>
+    <p>добавить много картинок</p>
+    @*AddImages*@
+
+</div>
+
+
+<hr />
+
+<div>
+    <p>редактировать картинку</p>
+
+
+</div>
+
+
+<hr />
+
+
+<div>
+    <p>фильтры</p>
+
+
+</div>
+
+<hr />
+
+<div>
+    <p></p>
+
+
+</div>
+
+
+<hr />
+
+
+<div>
+    <p></p>
+
+
+</div>
+
+
+<hr />
+
+
+
+<div>
+    <p></p>
+
+
+</div>
+
+
+<hr />
+
+
+
+<div>
+    <p></p>
+
+
+</div>
+
+
+<hr />
+
+
+
+<div>
+    <p></p>
+
+
+</div>
+
+
+<hr />
+
+
+
+<div>
+    <p></p>
+
+
+</div>
+
+
+<hr />
