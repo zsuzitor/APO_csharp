@@ -44,7 +44,14 @@ namespace APO.Controllers
 
 
 
-
+        //
+        /// <summary>
+        /// подгрузка списка картинок
+        /// </summary>
+        /// <param name="Place"></param>
+        /// <param name="Type"></param>
+        /// <param name="startId"></param>
+        /// <returns></returns>
         public ActionResult ListImages(string [] Place, string[] Type,int startId= 0)//int count,
         {
             try
@@ -65,6 +72,14 @@ namespace APO.Controllers
             return PartialView();
         }
 
+        //
+        /// <summary>
+        /// подгрузка лайкнутых пользователем картинок
+        /// </summary>
+        /// <param name="Place"></param>
+        /// <param name="Type"></param>
+        /// <param name="startId"></param>
+        /// <returns></returns>
         public ActionResult ListLikedImages(string[] Place, string[] Type , int startId=0)//int count,
         {
             try
@@ -107,7 +122,14 @@ namespace APO.Controllers
             return PartialView();
         }
 
-
+        //
+        /// <summary>
+        /// подгрузка добавленных в избранное пользователем картинок
+        /// </summary>
+        /// <param name="Place"></param>
+        /// <param name="Type"></param>
+        /// <param name="startId"></param>
+        /// <returns></returns>
         public ActionResult ListFavoriteImages( string[] Place, string[] Type, int startId=0)//int count,
         {
             try
@@ -152,6 +174,13 @@ namespace APO.Controllers
             return PartialView();
         }
 
+
+        //
+        /// <summary>
+        /// удаление картинки
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         //[HttpPost]
         public ActionResult DeleteImage(int id)
         {
@@ -169,6 +198,15 @@ namespace APO.Controllers
             return RedirectToAction("Index");
         }
 
+
+        //
+        /// <summary>
+        /// добавление пака картинок
+        /// 
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="uploadImage"></param>
+        /// <returns></returns>
         //[HttpPost]
         public ActionResult AddImages(HttpPostedFileBase file, HttpPostedFileBase[] uploadImage)
         {
@@ -200,6 +238,13 @@ namespace APO.Controllers
             return RedirectToAction("Index");
         }
 
+
+        /// <summary>
+        /// добавление картинки
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="uploadImage"></param>
+        /// <returns></returns>
         //[HttpPost]
         public ActionResult AddImage(Image a, HttpPostedFileBase uploadImage)//string name, string description, string cords, HttpPostedFileBase uploadImage
         {
@@ -224,6 +269,12 @@ namespace APO.Controllers
             return RedirectToAction("Index");
         }
 
+
+        /// <summary>
+        /// редактирование картинки
+        /// </summary>
+        /// <param name="a"></param>
+        /// <returns></returns>
         //для связывания параметров передавать их по именам свойств Image (Id,Name и тд)(как обычные параметры)
         public ActionResult EditImage(Image a)
         {
@@ -245,6 +296,11 @@ namespace APO.Controllers
 
 
 
+        /// <summary>
+        /// добавление картинки в избранное
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         //[HttpPost]
         public ActionResult FavoriteImage(int id)
         {
@@ -273,16 +329,18 @@ namespace APO.Controllers
                 Response.StatusCode = 500;
                 return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
             }
-
-
-
-
+            
 
             return RedirectToAction("Index");
-
-
-
+            
         }
+
+
+        /// <summary>
+        /// лайк картинки
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         //[HttpPost]
         public ActionResult LikeImage(int id)
         {
@@ -313,13 +371,9 @@ namespace APO.Controllers
             }
             
             
-
-            
-            
             return RedirectToAction("Index");
         }
-
-
+        
     }
 }
 
