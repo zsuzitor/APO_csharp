@@ -36,7 +36,8 @@ namespace APO.Controllers
 
             //Response.StatusCode = (int)HttpStatusCode.BadRequest;
             //return Json(new { jobId = -1 });
-            
+            //HttpContext.Request.Cookies["FavoritedImgMass"].Value = " ";
+            //HttpContext.Request.Cookies["LikedImgMass"].Value = " ";
 
             return View();
         }
@@ -78,14 +79,18 @@ namespace APO.Controllers
                 List<int> mass = new List<int>();
                 if (user == null)
                 {
-                    var imgslikeC = HttpContext.Request.Cookies["LikedImgMass"]?.Value ?? "";
-                    string newFavStr;
-                    mass = Image.GetFromCookies(Place, Type, imgslikeC, out newFavStr, startId);
-                    HttpContext.Request.Cookies["LikedImgMass"].Value = newFavStr;
+                    if (HttpContext.Request.Cookies["LikedImgMass"] != null)
+                    {
+                        var imgslikeC = HttpContext.Request.Cookies["LikedImgMass"].Value ?? "";
+                        string newFavStr;
+                        mass = Image.GetFromCookies(Place, Type, imgslikeC, out newFavStr, startId);
+                        HttpContext.Request.Cookies["LikedImgMass"].Value = newFavStr;
+                    }
                 }
                 else
                 {
-                    user.GetLikedImages(Place, Type, startId);
+                    mass=user.GetLikedImages(Place, Type, startId);
+                    //mass = user.ImagesFavorites.Select(x1 => x1.Id).ToList();
 
                 }
 
@@ -116,15 +121,20 @@ namespace APO.Controllers
                 List<int> mass = new List<int>();
                 if (user == null)
                 {
-                    var imgsFavC = HttpContext.Request.Cookies["FavoritedImgMass"]?.Value ?? "";
-                    string newFavStr;
-                    mass = Image.GetFromCookies(Place, Type, imgsFavC, out newFavStr, startId);
-                    HttpContext.Request.Cookies["FavoritedImgMass"].Value = newFavStr;
+                    if (HttpContext.Request.Cookies["FavoritedImgMass"] != null)
+                    {
+                        var imgsFavC = HttpContext.Request.Cookies["FavoritedImgMass"].Value ?? "";
+                        string newFavStr;
+                        mass = Image.GetFromCookies(Place, Type, imgsFavC, out newFavStr, startId);
+
+                        HttpContext.Request.Cookies["FavoritedImgMass"].Value = newFavStr;
+                    }
+                        
                 }
                 else
                 {
-                    user.GetFavoritedImages(Place, Type, startId);
-
+                    mass=user.GetFavoritedImages(Place, Type, startId);
+                    //mass = user.ImagesFavorites.Select(x1=>x1.Id).ToList();
 
                 }
 
@@ -253,7 +263,8 @@ namespace APO.Controllers
                     return RedirectToAction("Index");
                 }
                 var img = Image.Get(id);
-
+                if (img == null)
+                    throw new Exception("картинка не найдена");
                 img.Favorite(out setFav, userId);
                 ViewBag.setFav = setFav;
             }
@@ -290,7 +301,8 @@ namespace APO.Controllers
                     return RedirectToAction("Index");
                 }
                 var img = Image.Get(id);
-
+                if (img == null)
+                    throw new Exception("картинка не найдена");
                 img.Like(out setLike, userId);
                 ViewBag.setLike = setLike;
             }
