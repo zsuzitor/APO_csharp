@@ -68,6 +68,13 @@ namespace APO.Models.Domain
             UsersFavorited = new List<ApplicationUser>();
         }
 
+        /// <summary>
+        /// получить список id картинок
+        /// </summary>
+        /// <param name="Place"></param>
+        /// <param name="Type"></param>
+        /// <param name="startId"></param>
+        /// <returns></returns>
         public static List<int> GetListId(string[] Place, string[] Type, int startId = 0)//int count,
         {
             List<int> res = new List<int>();
@@ -103,7 +110,12 @@ namespace APO.Models.Domain
 
 
 
-
+        /// <summary>
+        /// добавление\удаление в избранное
+        /// </summary>
+        /// <param name="set"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public bool Favorite(out bool set, string userId)
         {
 
@@ -133,7 +145,12 @@ namespace APO.Models.Domain
             return true;
         }
 
-
+        /// <summary>
+        /// добавление\удаление в лайкнутое
+        /// </summary>
+        /// <param name="set"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public bool Like(out bool set,string userId)
         {
            
@@ -163,7 +180,11 @@ namespace APO.Models.Domain
             return true;
         }
 
-
+        /// <summary>
+        /// редактирование
+        /// </summary>
+        /// <param name="a"></param>
+        /// <returns></returns>
         public bool Edit(Image a)
         {
             using (var db = new ApplicationDbContext())
@@ -181,7 +202,15 @@ namespace APO.Models.Domain
             }
 
 
-        
+        /// <summary>
+        /// получаем актуальный список id из строки
+        /// </summary>
+        /// <param name="Place"></param>
+        /// <param name="Type"></param>
+        /// <param name="oldC - старая строка с списом id"></param>
+        /// <param name="newC - новая строка с списом id"></param>
+        /// <param name="startId"></param>
+        /// <returns></returns>
         public static List<int> GetFromCookies(string[] Place, string[] Type, string oldC, out string newC,int startId=0)//,string properties
         {
             //startId = startId > 0 ? startId : startId + 1;
@@ -222,7 +251,14 @@ namespace APO.Models.Domain
             return res;
         }
 
-
+        /// <summary>
+        /// добавление\удаление в\из строку
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="oldC"></param>
+        /// <param name="newC"></param>
+        /// <param name="set"></param>
+        /// <returns></returns>
         public static bool AddDelCookies(string id,string oldC, out string newC,out bool set)//,string properties
         {
             var oldCMass = oldC.Split(new string[] { "@" }, StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -246,6 +282,12 @@ namespace APO.Models.Domain
             return true;
         }
 
+
+        /// <summary>
+        /// получить объект по id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public static Image Get(int id)
         {
             Image res = null;
@@ -255,7 +297,11 @@ namespace APO.Models.Domain
             }
             return res;
         }
-
+        /// <summary>
+        /// удалить объект из строки
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public static bool Delete(int id)
         {
             string path = HostingEnvironment.MapPath($"~/Content/DbImages/" + id);
@@ -281,7 +327,11 @@ namespace APO.Models.Domain
         }
 
        
-
+        /// <summary>
+        /// добавление новой записи
+        /// </summary>
+        /// <param name="uploadImage"></param>
+        /// <returns></returns>
         public bool AddNew(HttpPostedFileBase uploadImage)
         {
             using (var db = new ApplicationDbContext())
@@ -343,7 +393,11 @@ namespace APO.Models.Domain
 
         //}
 
-
+        /// <summary>
+        /// получаем байты из HttpPostedFileBase
+        /// </summary>
+        /// <param name="uploadImage"></param>
+        /// <returns></returns>
         public static byte[] GetBytesFromUpload(HttpPostedFileBase uploadImage)
         {
             byte[] res = null;
@@ -369,6 +423,13 @@ namespace APO.Models.Domain
 
             return res;
         }
+
+        /// <summary>
+        /// изменяем размер картинки
+        /// </summary>
+        /// <param name="newSizePerc"></param>
+        /// <param name="originalImage"></param>
+        /// <returns></returns>
         //newSizePerc- 0\100
         private static System.Drawing.Image ResizeImage(int newSizePerc, System.Drawing.Image originalImage)
         {
@@ -392,7 +453,11 @@ namespace APO.Models.Domain
             return originalImage.GetThumbnailImage(newSizeW, newSizeH, null, IntPtr.Zero);
         }
 
-
+        /// <summary>
+        /// байты->System.Drawing.Image
+        /// </summary>
+        /// <param name="byteArrayIn"></param>
+        /// <returns></returns>
         //image from byte
         public static System.Drawing.Image byteArrayToImage(byte[] byteArrayIn)
         {
@@ -406,7 +471,12 @@ namespace APO.Models.Domain
 
 
 
-        
+        /// <summary>
+        /// System.Drawing.Image ->bytes
+        /// </summary>
+        /// <param name="imageIn"></param>
+        /// <param name="baseFormat"></param>
+        /// <returns></returns>
         //baseFormat = (Image)imageIn.RawFormat
         public static byte[] ImageToByteArray(System.Drawing.Image imageIn, ImageFormat baseFormat)
         {
@@ -418,7 +488,11 @@ namespace APO.Models.Domain
             }
         }
 
-
+        /// <summary>
+        /// file-> bytes
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         public static byte[] FileToByteArray(string fileName)
         {
             byte[] buff = null;

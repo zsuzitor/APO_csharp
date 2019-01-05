@@ -14,7 +14,7 @@ namespace APO.Models.DataBase
         protected override void Seed(ApplicationDbContext db)//название котекста
         {
             var userManager = new ApplicationUserManager(new UserStore<ApplicationUser>(db));
-            //доп инфа по ролям и созданию пользователей по тегу #roles
+           
             var admin = new ApplicationUser { Email = "admin@mail.ru", UserName = "admin@mail.ru", Name = "zsuz", Surname = "zsuzSUR", Birthday = DateTime.Now };
             string password = "Admin1!";
             var result = userManager.Create(admin, password);

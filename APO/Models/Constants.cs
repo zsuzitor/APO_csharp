@@ -7,7 +7,7 @@ namespace APO.Models
 {
     public class Constants
     {
-        public static int CountLoadItem { get; set; } = 1;
+        public static int CountLoadItem { get; set; } = 1;//количество записей для подгрузки
 
     }
 }

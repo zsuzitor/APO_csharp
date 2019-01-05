@@ -44,12 +44,19 @@ namespace APO.Models
             ImagesFavorites = new List<Image>();
         }
 
-
+        /// <summary>
+        /// получить id пользователя
+        /// </summary>
+        /// <returns></returns>
         public static string GetUserId()
         {
             return System.Web.HttpContext.Current.User.Identity.GetUserId();
         }
-
+        /// <summary>
+        ///  получить объект пользователя
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public static ApplicationUser GetUser(string id)
         {
             //string check_id = ApplicationUser.GetUserId();
@@ -63,6 +70,12 @@ namespace APO.Models
 
             return res;
         }
+        /// <summary>
+        /// получить объект пользователя
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="db"></param>
+        /// <returns></returns>
         public static ApplicationUser GetUser(string id, ApplicationDbContext db)
         {
             //string check_id = ApplicationUser.GetUserId();
@@ -74,7 +87,10 @@ namespace APO.Models
             return res;
         }
 
-
+        /// <summary>
+        /// загрузить все лайкнутые картинки
+        /// </summary>
+        /// <returns></returns>
         public  bool LoadLikedImages()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
@@ -87,6 +103,10 @@ namespace APO.Models
             
             return true;
         }
+        /// <summary>
+        /// загрузить все добавленные в избранное картинки
+        /// </summary>
+        /// <returns></returns>
         public bool LoadFavoritedImages()
         {
             using (ApplicationDbContext db = new ApplicationDbContext())
@@ -100,7 +120,13 @@ namespace APO.Models
             return true;
         }
 
-
+        /// <summary>
+        /// получить часть лайкнутых картинок
+        /// </summary>
+        /// <param name="Place"></param>
+        /// <param name="Type"></param>
+        /// <param name="startId"></param>
+        /// <returns></returns>
         public List<int> GetLikedImages(string[] Place, string[] Type, int startId = 0)
         {
             //this.LoadLikedImages();
@@ -142,6 +168,14 @@ namespace APO.Models
 
         }
 
+
+        /// <summary>
+        /// получить часть добавленных в избранное картинок
+        /// </summary>
+        /// <param name="Place"></param>
+        /// <param name="Type"></param>
+        /// <param name="startId"></param>
+        /// <returns></returns>
         public List<int> GetFavoritedImages(string[] Place, string[] Type, int startId = 0)
         {
             //this.LoadFavoritedImages();
@@ -209,7 +243,7 @@ namespace APO.Models
             Database.SetInitializer<ApplicationDbContext>(new AppDbInitializer());
         }
 
-
+        //настраиваем связь многие ко многим
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ApplicationUser>().HasMany(c => c.ImagesLikes)

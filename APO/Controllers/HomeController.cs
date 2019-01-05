@@ -48,9 +48,9 @@ namespace APO.Controllers
         /// <summary>
         /// подгрузка списка картинок
         /// </summary>
-        /// <param name="Place"></param>
-        /// <param name="Type"></param>
-        /// <param name="startId"></param>
+        /// <param name="Place -массив фильтров"></param>
+        /// <param name="Type -массив фильтров"></param>
+        /// <param name="startId id последней загруженной картинки"></param>
         /// <returns></returns>
         public ActionResult ListImages(string [] Place, string[] Type,int startId= 0)//int count,
         {
@@ -76,9 +76,9 @@ namespace APO.Controllers
         /// <summary>
         /// подгрузка лайкнутых пользователем картинок
         /// </summary>
-        /// <param name="Place"></param>
-        /// <param name="Type"></param>
-        /// <param name="startId"></param>
+        /// <param name="Place -массив фильтров"></param>
+        /// <param name="Type -массив фильтров"></param>
+        /// <param name="startId  id последней загруженной картинки"></param>
         /// <returns></returns>
         public ActionResult ListLikedImages(string[] Place, string[] Type , int startId=0)//int count,
         {
@@ -126,9 +126,9 @@ namespace APO.Controllers
         /// <summary>
         /// подгрузка добавленных в избранное пользователем картинок
         /// </summary>
-        /// <param name="Place"></param>
-        /// <param name="Type"></param>
-        /// <param name="startId"></param>
+        /// <param name="Place -массив фильтров"></param>
+        /// <param name="Type -массив фильтров"></param>
+        /// <param name="startId  id последней загруженной картинки"></param>
         /// <returns></returns>
         public ActionResult ListFavoriteImages( string[] Place, string[] Type, int startId=0)//int count,
         {
@@ -179,7 +179,7 @@ namespace APO.Controllers
         /// <summary>
         /// удаление картинки
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id id картинки для удаления"></param>
         /// <returns></returns>
         //[HttpPost]
         public ActionResult DeleteImage(int id)
@@ -204,8 +204,8 @@ namespace APO.Controllers
         /// добавление пака картинок
         /// 
         /// </summary>
-        /// <param name="file"></param>
-        /// <param name="uploadImage"></param>
+        /// <param name="file файл с координатами (разделитель- перевод строки('\n'))"></param>
+        /// <param name="uploadImage  картинки"></param>
         /// <returns></returns>
         //[HttpPost]
         public ActionResult AddImages(HttpPostedFileBase file, HttpPostedFileBase[] uploadImage)
@@ -242,8 +242,8 @@ namespace APO.Controllers
         /// <summary>
         /// добавление картинки
         /// </summary>
-        /// <param name="a"></param>
-        /// <param name="uploadImage"></param>
+        /// <param name="a -свойства для создания объекта"></param>
+        /// <param name="uploadImage -картинка"></param>
         /// <returns></returns>
         //[HttpPost]
         public ActionResult AddImage(Image a, HttpPostedFileBase uploadImage)//string name, string description, string cords, HttpPostedFileBase uploadImage
@@ -273,7 +273,7 @@ namespace APO.Controllers
         /// <summary>
         /// редактирование картинки
         /// </summary>
-        /// <param name="a"></param>
+        /// <param name="a -свойства для редактирования объекта"></param>
         /// <returns></returns>
         //для связывания параметров передавать их по именам свойств Image (Id,Name и тд)(как обычные параметры)
         public ActionResult EditImage(Image a)
@@ -299,7 +299,7 @@ namespace APO.Controllers
         /// <summary>
         /// добавление картинки в избранное
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id- id картинки для добавления в избранное"></param>
         /// <returns></returns>
         //[HttpPost]
         public ActionResult FavoriteImage(int id)
@@ -339,7 +339,7 @@ namespace APO.Controllers
         /// <summary>
         /// лайк картинки
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id -id картинки для добавления в лайкнутые"></param>
         /// <returns></returns>
         //[HttpPost]
         public ActionResult LikeImage(int id)
