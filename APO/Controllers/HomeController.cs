@@ -373,7 +373,109 @@ namespace APO.Controllers
             
             return RedirectToAction("Index");
         }
+
+
+
+
+        //корзина
+
+
+            /// <summary>
+            /// возвращает id img которые находятся в корзине
+            /// </summary>
+            /// <returns></returns>
+        public ActionResult BasketImages()
+        {
+            try { 
+            ViewBag.BasketImages = Image.LoadBasket();
+            }
+            catch (Exception e)
+            {
+                Response.StatusCode = 500;
+                return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        /// <summary>
+        /// очищает корзину, не удаляя картинки
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ClearBasketImages()
+        {
+            try { 
+            Image.ClearBasket();
+            }
+            catch (Exception e)
+            {
+                Response.StatusCode = 500;
+                return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
+            }
+            return RedirectToAction("Index");
+        }
+
+        /// <summary>
+        /// удаляет все картинки находящиеся в корзине
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult DeleteAllBasketImages()
+        {
+            try { 
+            Image.DeleteAllFromBasket();
+            }
+            catch (Exception e)
+            {
+                Response.StatusCode = 500;
+                return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
+            }
+            return RedirectToAction("Index");
+        }
+
+        /// <summary>
+        /// добавляет в корзину
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult AddToBasketImages(int id)
+        {
+            try { 
+            var img =Image.Get(id);
+            bool er=img.AddToBasket();
+                if (!er)
+                    throw new Exception("картинка уже удалена");
+            }
+            catch (Exception e)
+            {
+                Response.StatusCode = 500;
+                return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
+            }
+            return RedirectToAction("Index");
+        }
+
+        /// <summary>
+        /// удалить из корзины
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult RemoveBasketImage(int id)
+        {
+            try { 
+            var img = Image.Get(id);
+            img.DeleteFromBasket();
+            }
+            catch (Exception e)
+            {
+                Response.StatusCode = 500;
+                return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
+            }
+            return RedirectToAction("Index");
+        }
+
+      
+
         
+
     }
 }
 

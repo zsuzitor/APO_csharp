@@ -12,15 +12,19 @@ namespace APO.Models.Domain
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
-        public string Cords { get; set; }
-        public bool Deleted { get; set; }
+        public string Description { get; set; }//описание
+        public string Cords { get; set; }//координаты
+        public bool Deleted { get; set; }//удалена
+        public bool ForDeleted { get; set; }//добавена в корзину
         //public string Path { get; set; }
-        public string Creator { get; set; }
 
+            
         //filter
         public string Place { get; set; }
         public string Type { get; set; }
+
+        public string CreatorId { get; set; }
+        public ApplicationUser Creator { get; set; }
 
         //ICollection
         public List<ApplicationUser> UsersLiked { get; set; }
@@ -32,8 +36,9 @@ namespace APO.Models.Domain
             Name = null;
             Description = null;
             Cords = null;
+            ForDeleted = false;
             Deleted = false;
-            Creator= ApplicationUser.GetUserId();
+            CreatorId = ApplicationUser.GetUserId();
             //Path = null;
 
             Place = null;
@@ -59,7 +64,8 @@ namespace APO.Models.Domain
             Description = description;
             Cords = cords;
             Deleted = false;
-            Creator = ApplicationUser.GetUserId();
+            ForDeleted = false;
+            CreatorId = ApplicationUser.GetUserId();
             //Path = null;
             Place = place;
             Type = type;
@@ -67,6 +73,92 @@ namespace APO.Models.Domain
             UsersLiked = new List<ApplicationUser>();
             UsersFavorited = new List<ApplicationUser>();
         }
+
+
+        /// <summary>
+        /// возвращает id img которые находятся в корзине
+        /// </summary>
+        /// <returns></returns>
+        public static List<int> LoadBasket()
+        {
+            List<int> res=null;
+            using (var db = new ApplicationDbContext())
+            {
+                res=db.Images.Where(x1 => x1.ForDeleted).Select(x1 => x1.Id).ToList();
+            }
+
+
+            return res;
+        }
+
+        /// <summary>
+        /// очищает корзину, не удаляя картинки
+        /// </summary>
+        public static void ClearBasket()
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                List<Image> mass = db.Images.Where(x1 => x1.ForDeleted).ToList();
+                foreach (var i in mass)
+                    i.ForDeleted = false;
+                db.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// удаляет все записи которые были в корзине
+        /// </summary>
+        public static void DeleteAllFromBasket()
+        {
+            var imgs = Image.LoadBasket();
+            foreach (var i in imgs)
+                Image.Delete(i);
+        }
+
+
+        /// <summary>
+        /// добавляем в корзину
+        /// </summary>
+        /// <param name="id"></param>
+        public  bool AddToBasket()
+        {
+            if (this.Deleted)
+                return false;
+            using (var db = new ApplicationDbContext())
+            {
+                db.Set<Image>().Attach(this);
+                this.ForDeleted = true;
+                db.SaveChanges();
+            }
+            return true;
+            }
+
+
+        /// <summary>
+        /// удаляет запись  из корзины
+        /// </summary>
+        /// <param name="id"></param>
+        public void DeleteFromBasket()
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                this.DeleteFromBasket(db);
+                            }
+        }
+
+
+        /// <summary>
+        /// удаляет запись из корзины
+        /// </summary>
+        /// <param name="id"></param>
+        public void DeleteFromBasket( ApplicationDbContext db)
+        {
+                db.Set<Image>().Attach(this);
+                this.ForDeleted = false;
+                db.SaveChanges();
+        }
+
+
 
         /// <summary>
         /// получить список id картинок
@@ -298,7 +390,7 @@ namespace APO.Models.Domain
             return res;
         }
         /// <summary>
-        /// удалить объект из строки
+        /// удалить объект 
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -311,8 +403,10 @@ namespace APO.Models.Domain
             }
             using (var db = new ApplicationDbContext())
             {
-                var img = db.Images.FirstOrDefault(x1 => x1.Id == id);
+                var img =Image.Get(id);
+                db.Set<Image>().Attach(img);
                 img.Deleted = true;
+                img.ForDeleted = false;
                 //if (!db.Entry(img).Collection(x1 => x1.UsersFavorited).IsLoaded)
                 //    db.Entry(img).Collection(x1 => x1.UsersFavorited).Load();
                 //if (!db.Entry(img).Collection(x1 => x1.UsersLiked).IsLoaded)

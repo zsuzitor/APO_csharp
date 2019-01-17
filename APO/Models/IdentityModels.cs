@@ -21,6 +21,8 @@ namespace APO.Models
         public DateTime Birthday { get; set; }
 
 
+        public List<Image> ImagesCreated { get; set; }
+
         //ICollection
         public List<Image> ImagesLikes { get; set; }
         public List<Image> ImagesFavorites { get; set; }
@@ -39,6 +41,7 @@ namespace APO.Models
             Surname = null;
             Birthday = DateTime.Now;
 
+            ImagesCreated = new List<Image>();
 
             ImagesLikes = new List<Image>();
             ImagesFavorites = new List<Image>();
