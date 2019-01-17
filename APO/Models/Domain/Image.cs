@@ -16,9 +16,9 @@ namespace APO.Models.Domain
         public string Cords { get; set; }//координаты
         public bool Deleted { get; set; }//удалена
         public bool ForDeleted { get; set; }//добавена в корзину
-        //public string Path { get; set; }
+                                            //public string Path { get; set; }
 
-            
+
         //filter
         public string Place { get; set; }
         public string Type { get; set; }
@@ -29,7 +29,7 @@ namespace APO.Models.Domain
         //ICollection
         public List<ApplicationUser> UsersLiked { get; set; }
         public List<ApplicationUser> UsersFavorited { get; set; }
-        
+
         public Image()
         {
             Id = 0;
@@ -48,11 +48,11 @@ namespace APO.Models.Domain
             UsersFavorited = new List<ApplicationUser>();
         }
 
-        public Image(string cords):base()
+        public Image(string cords) : this()
         {
             if (string.IsNullOrWhiteSpace(cords))
                 throw new Exception("передана пустая строка для координат");
-                Cords = cords;
+            Cords = cords;
         }
         public Image(string name, string description, string place, string type, string cords)
         {
@@ -81,10 +81,10 @@ namespace APO.Models.Domain
         /// <returns></returns>
         public static List<int> LoadBasket()
         {
-            List<int> res=null;
+            List<int> res = null;
             using (var db = new ApplicationDbContext())
             {
-                res=db.Images.Where(x1 => x1.ForDeleted).Select(x1 => x1.Id).ToList();
+                res = db.Images.Where(x1 => x1.ForDeleted).Select(x1 => x1.Id).ToList();
             }
 
 
@@ -120,7 +120,7 @@ namespace APO.Models.Domain
         /// добавляем в корзину
         /// </summary>
         /// <param name="id"></param>
-        public  bool AddToBasket()
+        public bool AddToBasket()
         {
             if (this.Deleted)
                 return false;
@@ -131,7 +131,7 @@ namespace APO.Models.Domain
                 db.SaveChanges();
             }
             return true;
-            }
+        }
 
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace APO.Models.Domain
             using (var db = new ApplicationDbContext())
             {
                 this.DeleteFromBasket(db);
-                            }
+            }
         }
 
 
@@ -151,11 +151,11 @@ namespace APO.Models.Domain
         /// удаляет запись из корзины
         /// </summary>
         /// <param name="id"></param>
-        public void DeleteFromBasket( ApplicationDbContext db)
+        public void DeleteFromBasket(ApplicationDbContext db)
         {
-                db.Set<Image>().Attach(this);
-                this.ForDeleted = false;
-                db.SaveChanges();
+            db.Set<Image>().Attach(this);
+            this.ForDeleted = false;
+            db.SaveChanges();
         }
 
 
@@ -170,7 +170,7 @@ namespace APO.Models.Domain
         public static List<int> GetListId(string[] Place, string[] Type, int startId = 0)//int count,
         {
             List<int> res = new List<int>();
-            
+
             if (Place == null)
                 Place = new string[0];
             if (Type == null)
@@ -243,14 +243,14 @@ namespace APO.Models.Domain
         /// <param name="set"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public bool Like(out bool set,string userId)
+        public bool Like(out bool set, string userId)
         {
-           
+
             using (var db = new ApplicationDbContext())
             {
-                
+
                 db.Set<Image>().Attach(this);
-                if (!db.Entry(this).Collection(x1=>x1.UsersLiked).IsLoaded)
+                if (!db.Entry(this).Collection(x1 => x1.UsersLiked).IsLoaded)
                     db.Entry(this).Collection(x1 => x1.UsersLiked).Load();
 
                 var likedObj = this.UsersLiked.FirstOrDefault(x1 => x1.Id == userId);
@@ -265,7 +265,7 @@ namespace APO.Models.Domain
                     this.UsersLiked.Remove(likedObj);
                     set = false;
                 }
-                    
+
                 db.SaveChanges();
             }
 
@@ -286,12 +286,12 @@ namespace APO.Models.Domain
                 this.Description = a.Description;
                 this.Cords = a.Cords;
                 this.Place = a.Place;
-                this.Type= a.Type;
+                this.Type = a.Type;
                 db.SaveChanges();
             }
 
             return true;
-            }
+        }
 
 
         /// <summary>
@@ -303,10 +303,10 @@ namespace APO.Models.Domain
         /// <param name="newC - новая строка с списом id"></param>
         /// <param name="startId"></param>
         /// <returns></returns>
-        public static List<int> GetFromCookies(string[] Place, string[] Type, string oldC, out string newC,int startId=0)//,string properties
+        public static List<int> GetFromCookies(string[] Place, string[] Type, string oldC, out string newC, int startId = 0)//,string properties
         {
             //startId = startId > 0 ? startId : startId + 1;
-           // startId ++;
+            // startId ++;
             if (Place == null)
                 Place = new string[0];
             if (Type == null)
@@ -351,7 +351,7 @@ namespace APO.Models.Domain
         /// <param name="newC"></param>
         /// <param name="set"></param>
         /// <returns></returns>
-        public static bool AddDelCookies(string id,string oldC, out string newC,out bool set)//,string properties
+        public static bool AddDelCookies(string id, string oldC, out string newC, out bool set)//,string properties
         {
             var oldCMass = oldC.Split(new string[] { "@" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
@@ -367,7 +367,7 @@ namespace APO.Models.Domain
                 set = true;
             }
 
-            newC =string.Join("@", oldCMass);
+            newC = string.Join("@", oldCMass);
 
 
 
@@ -385,7 +385,7 @@ namespace APO.Models.Domain
             Image res = null;
             using (var db = new ApplicationDbContext())
             {
-                res=db.Images.FirstOrDefault(x1=>x1.Id==id);
+                res = db.Images.FirstOrDefault(x1 => x1.Id == id);
             }
             return res;
         }
@@ -403,7 +403,7 @@ namespace APO.Models.Domain
             }
             using (var db = new ApplicationDbContext())
             {
-                var img =Image.Get(id);
+                var img = Image.Get(id);
                 db.Set<Image>().Attach(img);
                 img.Deleted = true;
                 img.ForDeleted = false;
@@ -417,10 +417,10 @@ namespace APO.Models.Domain
 
             }
 
-                return true;
+            return true;
         }
 
-       
+
         /// <summary>
         /// добавление новой записи
         /// </summary>
@@ -454,12 +454,12 @@ namespace APO.Models.Domain
             foreach (var i in mass)
             {
                 var imgB = Image.ImageToByteArray(i.Value, mass["original"].RawFormat);
-               
+
                 Directory.CreateDirectory(path);
                 File.WriteAllBytes($@"{path}\\{i.Key}.jpeg", imgB);//{mass["original"].RawFormat}
             }
-            
-            
+
+
             return true;
         }
 
@@ -527,8 +527,8 @@ namespace APO.Models.Domain
         //newSizePerc- 0\100
         private static System.Drawing.Image ResizeImage(int newSizePerc, System.Drawing.Image originalImage)
         {
-            int newSizeW= (int)(Convert.ToDouble( originalImage.Width)* newSizePerc/100);
-            int newSizeH= (int)(Convert.ToDouble(originalImage.Height) * newSizePerc / 100);
+            int newSizeW = (int)(Convert.ToDouble(originalImage.Width) * newSizePerc / 100);
+            int newSizeH = (int)(Convert.ToDouble(originalImage.Height) * newSizePerc / 100);
             if (newSizeW <= 100)
                 newSizeW = 100;
             //if (newSizeH <= 100)
@@ -557,8 +557,8 @@ namespace APO.Models.Domain
         {
             MemoryStream ms = new MemoryStream(byteArrayIn);
             System.Drawing.Image returnImage = System.Drawing.Image.FromStream(ms);
-            foreach(var i in returnImage.PropertyItems)
-            returnImage.RemovePropertyItem(i.Id);
+            foreach (var i in returnImage.PropertyItems)
+                returnImage.RemovePropertyItem(i.Id);
 
             return returnImage;
         }

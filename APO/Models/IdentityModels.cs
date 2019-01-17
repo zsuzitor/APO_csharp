@@ -261,6 +261,9 @@ namespace APO.Models
                 .MapRightKey("ImageId")
                 .ToTable("ApplicationUserImageFavorites"));
 
+            modelBuilder.Entity<ApplicationUser>().HasMany(c => c.ImagesCreated)
+               .WithOptional(s => s.Creator);
+
             base.OnModelCreating(modelBuilder);
         }
     }

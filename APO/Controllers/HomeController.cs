@@ -52,7 +52,7 @@ namespace APO.Controllers
         /// <param name="Type -массив фильтров"></param>
         /// <param name="startId id последней загруженной картинки"></param>
         /// <returns></returns>
-        public ActionResult ListImages(string [] Place, string[] Type,int startId= 0)//int count,
+        public ActionResult ListImages(string[] Place, string[] Type, int startId = 0)//int count,
         {
             try
             {
@@ -61,13 +61,15 @@ namespace APO.Controllers
                 ViewBag.massImages = mass;
                 //return RedirectToRoute(new { action = "Index", controller= "Home" });
                 //return RedirectToAction("Index","Home",new { });
-            }
+
+               
+                    }
             catch (Exception e)
             {
                 Response.StatusCode = 500;
-                return Json(new {errorText=e.Message,inner=e.InnerException?.Message });
+                return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
             }
-           
+
 
             return PartialView();
         }
@@ -80,7 +82,7 @@ namespace APO.Controllers
         /// <param name="Type -массив фильтров"></param>
         /// <param name="startId  id последней загруженной картинки"></param>
         /// <returns></returns>
-        public ActionResult ListLikedImages(string[] Place, string[] Type , int startId=0)//int count,
+        public ActionResult ListLikedImages(string[] Place, string[] Type, int startId = 0)//int count,
         {
             try
             {
@@ -104,7 +106,7 @@ namespace APO.Controllers
                 }
                 else
                 {
-                    mass=user.GetLikedImages(Place, Type, startId);
+                    mass = user.GetLikedImages(Place, Type, startId);
                     //mass = user.ImagesFavorites.Select(x1 => x1.Id).ToList();
 
                 }
@@ -117,8 +119,8 @@ namespace APO.Controllers
                 Response.StatusCode = 500;
                 return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
             }
-            
-            
+
+
             return PartialView();
         }
 
@@ -130,7 +132,7 @@ namespace APO.Controllers
         /// <param name="Type -массив фильтров"></param>
         /// <param name="startId  id последней загруженной картинки"></param>
         /// <returns></returns>
-        public ActionResult ListFavoriteImages( string[] Place, string[] Type, int startId=0)//int count,
+        public ActionResult ListFavoriteImages(string[] Place, string[] Type, int startId = 0)//int count,
         {
             try
             {
@@ -151,11 +153,11 @@ namespace APO.Controllers
 
                         HttpContext.Request.Cookies["FavoritedImgMass"].Value = newFavStr;
                     }
-                        
+
                 }
                 else
                 {
-                    mass=user.GetFavoritedImages(Place, Type, startId);
+                    mass = user.GetFavoritedImages(Place, Type, startId);
                     //mass = user.ImagesFavorites.Select(x1=>x1.Id).ToList();
 
                 }
@@ -169,8 +171,8 @@ namespace APO.Controllers
                 Response.StatusCode = 500;
                 return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
             }
-            
-            
+
+
             return PartialView();
         }
 
@@ -193,8 +195,8 @@ namespace APO.Controllers
                 Response.StatusCode = 500;
                 return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
             }
-            
-            
+
+
             return RedirectToAction("Index");
         }
 
@@ -218,13 +220,13 @@ namespace APO.Controllers
                 for (int i = 0; i < (massCords.Length < uploadImage.Length ? massCords.Length : uploadImage.Length); ++i)
                 {
                     var img = new Image(massCords[i].Trim());
-                    bool sc=img.AddNew(uploadImage[i]);
+                    bool sc = img.AddNew(uploadImage[i]);
                     if (!sc)
                     {
                         Image.Delete(img.Id);
                         throw new Exception("проблемы с файлом");
                     }
-                       
+
                 }
             }
             catch (Exception e)
@@ -232,8 +234,8 @@ namespace APO.Controllers
                 Response.StatusCode = 500;
                 return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
             }
-            
-            
+
+
 
             return RedirectToAction("Index");
         }
@@ -263,8 +265,8 @@ namespace APO.Controllers
                 Response.StatusCode = 500;
                 return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
             }
-           
-            
+
+
 
             return RedirectToAction("Index");
         }
@@ -288,8 +290,8 @@ namespace APO.Controllers
                 Response.StatusCode = 500;
                 return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
             }
-          
-            
+
+
 
             return RedirectToAction("Index");
         }
@@ -329,10 +331,10 @@ namespace APO.Controllers
                 Response.StatusCode = 500;
                 return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
             }
-            
+
 
             return RedirectToAction("Index");
-            
+
         }
 
 
@@ -369,8 +371,8 @@ namespace APO.Controllers
                 Response.StatusCode = 500;
                 return Json(new { errorText = e.Message, inner = e.InnerException?.Message });
             }
-            
-            
+
+
             return RedirectToAction("Index");
         }
 
@@ -380,14 +382,15 @@ namespace APO.Controllers
         //корзина
 
 
-            /// <summary>
-            /// возвращает id img которые находятся в корзине
-            /// </summary>
-            /// <returns></returns>
+        /// <summary>
+        /// возвращает id img которые находятся в корзине
+        /// </summary>
+        /// <returns></returns>
         public ActionResult BasketImages()
         {
-            try { 
-            ViewBag.BasketImages = Image.LoadBasket();
+            try
+            {
+                ViewBag.BasketImages = Image.LoadBasket();
             }
             catch (Exception e)
             {
@@ -404,8 +407,9 @@ namespace APO.Controllers
         /// <returns></returns>
         public ActionResult ClearBasketImages()
         {
-            try { 
-            Image.ClearBasket();
+            try
+            {
+                Image.ClearBasket();
             }
             catch (Exception e)
             {
@@ -421,8 +425,9 @@ namespace APO.Controllers
         /// <returns></returns>
         public ActionResult DeleteAllBasketImages()
         {
-            try { 
-            Image.DeleteAllFromBasket();
+            try
+            {
+                Image.DeleteAllFromBasket();
             }
             catch (Exception e)
             {
@@ -439,9 +444,10 @@ namespace APO.Controllers
         /// <returns></returns>
         public ActionResult AddToBasketImages(int id)
         {
-            try { 
-            var img =Image.Get(id);
-            bool er=img.AddToBasket();
+            try
+            {
+                var img = Image.Get(id);
+                bool er = img.AddToBasket();
                 if (!er)
                     throw new Exception("картинка уже удалена");
             }
@@ -460,9 +466,10 @@ namespace APO.Controllers
         /// <returns></returns>
         public ActionResult RemoveBasketImage(int id)
         {
-            try { 
-            var img = Image.Get(id);
-            img.DeleteFromBasket();
+            try
+            {
+                var img = Image.Get(id);
+                img.DeleteFromBasket();
             }
             catch (Exception e)
             {
@@ -472,9 +479,9 @@ namespace APO.Controllers
             return RedirectToAction("Index");
         }
 
-      
 
-        
+
+
 
     }
 }
