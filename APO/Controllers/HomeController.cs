@@ -283,6 +283,8 @@ namespace APO.Controllers
             try
             {
                 var img = Image.Get(a.Id);
+                //if (img==null||img.Deleted)
+                //    throw new Exception("картинка не найдена");
                 img.Edit(a);
             }
             catch (Exception e)
@@ -321,8 +323,8 @@ namespace APO.Controllers
                     return RedirectToAction("Index");
                 }
                 var img = Image.Get(id);
-                if (img == null)
-                    throw new Exception("картинка не найдена");
+                //if (img == null||img.Deleted)
+                //    throw new Exception("картинка не найдена");
                 img.Favorite(out setFav, userId);
                 ViewBag.setFav = setFav;
             }
@@ -361,8 +363,8 @@ namespace APO.Controllers
                     return RedirectToAction("Index");
                 }
                 var img = Image.Get(id);
-                if (img == null)
-                    throw new Exception("картинка не найдена");
+                //if (img == null || img.Deleted)
+                //    throw new Exception("картинка не найдена");
                 img.Like(out setLike, userId);
                 ViewBag.setLike = setLike;
             }
@@ -447,6 +449,8 @@ namespace APO.Controllers
             try
             {
                 var img = Image.Get(id);
+                //if (img == null || img.Deleted)
+                //    throw new Exception("картинка не найдена");
                 bool er = img.AddToBasket();
                 if (!er)
                     throw new Exception("картинка уже удалена");
@@ -469,6 +473,8 @@ namespace APO.Controllers
             try
             {
                 var img = Image.Get(id);
+                //if (img == null || img.Deleted)
+                //    throw new Exception("картинка не найдена");
                 img.DeleteFromBasket();
             }
             catch (Exception e)
